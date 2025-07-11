@@ -13,6 +13,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Cache React dependencies
+        uses: actions/cache@v4
+        with:
+          path: react-app/node_modules
+          key: ${{ runner.os }}-npm-${{ hashFiles('react-app/package-lock.json') }}
+          estore-keys: |
+           ${{ runner.os }}-npm-
 
       - name: Show Node and npm version
         run: |
