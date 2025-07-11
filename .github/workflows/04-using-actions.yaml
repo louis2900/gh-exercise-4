@@ -8,7 +8,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+      - name: List root folder after checkout
+        run: ls -la
+
+      - name: List react-app folder after checkout
+        run: ls -la react-app
       - name: List root files after checkout
         run: ls -l
 
