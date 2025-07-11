@@ -8,6 +8,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      - name: List root files after checkout
+        run: ls -l
 
       - name: Set up Node
         uses: actions/setup-node@v4
