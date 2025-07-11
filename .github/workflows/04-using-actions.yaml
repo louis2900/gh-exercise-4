@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
         run:
-            working-directory: eact-app
+            working-directory: react-app
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
