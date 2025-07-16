@@ -1,4 +1,4 @@
-name: 13 - Iusing Caching
+name: 13 - using Caching
 
 on: 
     workflow_dispatch:
@@ -18,7 +18,7 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
             - name: Setup node
-              uses: actions/node@4
+              uses: actions/setup-node@4
               with:
                 node: 20
             - name: install dependencies
