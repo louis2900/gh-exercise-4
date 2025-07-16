@@ -7,6 +7,11 @@ on:
                 type: boolean
                 default: true
                 description: Whether to ececute cahce step
+            node-version:
+                type: choice
+                options: [18.x, 20.x, 20.x]
+                default: 20.x
+                description: Node version
 
 jobs:
     build:
@@ -20,8 +25,16 @@ jobs:
             - name: Setup node
               uses: actions/setup-node@v4
               with:
-                node: 20
+                node: ${{inputs.node-version}}
+            - name: download cached dependencies
+              id: cache
+              if: ${{inputs.use-cache}}
+              uses: actions/cache@v3
+              with:
+                key: deps-node-modules-${{hashFiles('react-app/package-lock.json')}}
+                path: react-app/node_modules
             - name: install dependencies
+              if: steps.cache.outputs.chache-hit != true
               run: npm ci
             - name: Testing
               run: npm run test
