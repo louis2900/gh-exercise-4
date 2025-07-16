@@ -1,0 +1,32 @@
+name: 13 - Iusing Caching
+
+on: 
+    workflow_dispatch:
+        inputs:
+            use-cache:
+                type: boolean
+                default: true
+                description: Whether to ececute cahce step
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: react-app
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Setup node
+              uses: actions/node@4
+              with:
+                node: 20
+            - name: install dependencies
+              run: npm ci
+            - name: Testing
+              run: npm run test
+            - name: Building
+              run: npm run build
+            - name: Depolying to nonprod
+              run: |
+               echo "Depolying to nonprod"
