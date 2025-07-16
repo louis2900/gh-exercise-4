@@ -14,11 +14,41 @@ on:
                 description: Node version
 
 jobs:
+
+    install-deps:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: react-app
+        outputs:
+            deps-cache-key: ${{steps.cache-key.outputs.CACHE_KEY}}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                node: ${{inputs.node-version}}
+            - name: Calculate cache key
+              id: cache-key
+              run: |
+               echo "CACHE_KEY=deps-node-modules-${{hashFiles('react-app/package-lock.json') }}" >> "$GITHUB_OUTPUT"
+            - name: Download cached dependencies
+              if: ${{inputs.use-cache}}
+              uses: actions/cache@v3
+              id: cache
+              with:
+                path: react-app/node_modules
+                key: ${{steps.cache-key.outputs.CACHE_KEY}}
+            - name: install dependencies
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: npm ci 
     build:
         runs-on: ubuntu-latest
         defaults:
             run:
                 working-directory: react-app
+        needs: install-deps
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -26,16 +56,13 @@ jobs:
               uses: actions/setup-node@v4
               with:
                 node: ${{inputs.node-version}}
-            - name: download cached dependencies
+            - name: Download cached dependencies
               id: cache
               if: ${{inputs.use-cache}}
               uses: actions/cache@v3
               with:
-                key: deps-node-modules-${{hashFiles('react-app/package-lock.json')}}
+                key:  ${{needs.install-deps.outputs.deps-cache-key}}
                 path: react-app/node_modules
-            - name: install dependencies
-              if: steps.cache.outputs.cache-hit != 'true'
-              run: npm ci
             - name: Testing
               run: npm run test
             - name: Building
@@ -43,3 +70,4 @@ jobs:
             - name: Depolying to nonprod
               run: |
                echo "Depolying to nonprod"
+
